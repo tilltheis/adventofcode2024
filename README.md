@@ -9,7 +9,7 @@ In Haskell!
 
 ## Running
 
-```
+```text
 Usage: stack run <day> <part>
 Example: stack run 1 2
 ```
@@ -17,3 +17,10 @@ Example: stack run 1 2
 ## Testing
 
 `stack test`
+
+## Developing
+
+Run tests on file change (requires `inotify-tools` on Ubuntu):
+```shell
+while inotifywait -e close_write **/*.hs; do stack test; done
+```
