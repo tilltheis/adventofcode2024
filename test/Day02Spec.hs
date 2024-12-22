@@ -1,9 +1,9 @@
 module Day02Spec (spec) where
 
-import Day02 (parseInput, part1, part2)
+import Day02
 import Test.Hspec
 
-input :: [[Int]]
+input :: Input
 input =
   parseInput
     "7 6 4 2 1\n\

@@ -22,5 +22,5 @@ Example: stack run 1 2
 
 Run tests on file change (requires `inotify-tools` on Ubuntu):
 ```shell
-while inotifywait -e close_write **/*.hs; do stack test; done
+while inotifywait -e close_write app src test; do stack test; done
 ```
