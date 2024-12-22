@@ -1,0 +1,60 @@
+name: adventofcode2024
+version: 0.1.0.0
+github: "tilltheis/adventofcode2024"
+license: MIT
+author: "Till Theis"
+maintainer: "example@example.com"
+copyright: "2024 Till Theis"
+
+extra-source-files:
+  - README.md
+
+# Metadata used when publishing your package
+# synopsis:            Short description of your package
+# category:            Web
+
+# To avoid duplicated efforts in documentation and dealing with the
+# complications of embedding Haddock markup inside cabal files, it is
+# common to point users to the README.md file.
+description: Please see the README on GitHub at <https://github.com/tilltheis/adventofcode2024#readme>
+
+dependencies:
+  - base >= 4.7 && < 5
+  - containers
+  - hspec
+
+ghc-options:
+  - -Wall
+  - -Wcompat
+  - -Widentities
+  - -Wincomplete-record-updates
+  - -Wincomplete-uni-patterns
+  - -Wmissing-export-lists
+  - -Wmissing-home-modules
+  - -Wpartial-fields
+  - -Wredundant-constraints
+
+library:
+  source-dirs: src
+
+executables:
+  adventofcode2024-exe:
+    main: Main.hs
+    source-dirs: app
+    ghc-options:
+      - -threaded
+      - -rtsopts
+      - -with-rtsopts=-N
+    dependencies:
+      - adventofcode2024
+
+tests:
+  adventofcode2024-test:
+    main: Spec.hs
+    source-dirs: test
+    ghc-options:
+      - -threaded
+      - -rtsopts
+      - -with-rtsopts=-N
+    dependencies:
+      - adventofcode2024
