@@ -1,8 +1,6 @@
 module Day05Spec (spec) where
 
-import Data.Map (Map)
 import qualified Data.Map as Map
-import Data.Set (Set)
 import qualified Data.Set as Set
 import Day05
 import Test.Hspec
@@ -68,4 +66,4 @@ spec = do
 
   describe "part2" $ do
     it "solves the official example" $ do
-      part2 input `shouldBe` 0
+      part2 input `shouldBe` 123

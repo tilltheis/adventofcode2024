@@ -46,4 +46,10 @@ part1 :: Input -> Int
 part1 (Input subsequents updates) = sum . map midElement $ filter (isValid subsequents) updates
 
 part2 :: Input -> Int
-part2 = const 0
+part2 (Input subsequents updates) = sum . map (midElement . rearrange) $ filter (not . isValid subsequents) updates
+  where
+    rearrange = reverse . Set.foldr step [] . Set.fromList
+    step x [] = [x]
+    step x (y : ys) = case Map.lookup y subsequents of
+      Just subs | Set.member x subs -> x : y : ys
+      _ -> y : step x ys
