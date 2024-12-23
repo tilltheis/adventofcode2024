@@ -98,5 +98,21 @@ part1 input =
     f = sum . map g
     g = length . filter (== "XMAS") . slidingWindows 4
 
+count :: (a -> Bool) -> [a] -> Int
+count p = length . filter p
+
 part2 :: Input -> Int
-part2 = const 0
+part2 input = count (`elem` patterns) $ map mask subGrids
+  where
+    patterns =
+      [ lines "M.S\n.A.\nM.S",
+        lines "M.M\n.A.\nS.S",
+        lines "S.M\n.A.\nS.M",
+        lines "S.S\n.A.\nM.M"
+      ]
+    subGrids = do
+      row <- [0 .. length input - 3]
+      col <- [0 .. length (head input) - 3]
+      return $ map (take 3 . drop col) $ take 3 $ drop row input
+    mask [[a, _, b], [_, c, _], [d, _, e]] = [[a, '.', b], ['.', c, '.'], [d, '.', e]]
+    mask _ = undefined
