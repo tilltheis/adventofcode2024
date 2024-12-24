@@ -1,5 +1,6 @@
 module Day05 (Input (..), parseInput, part1, part2) where
 
+import Data.Foldable (foldr')
 import Data.Map (Map)
 import qualified Data.Map as Map
 import Data.Set (Set)
@@ -48,7 +49,7 @@ part1 (Input subsequents updates) = sum . map midElement $ filter (isValid subse
 part2 :: Input -> Int
 part2 (Input subsequents updates) = sum . map (midElement . rearrange) $ filter (not . isValid subsequents) updates
   where
-    rearrange = reverse . Set.foldr step [] . Set.fromList
+    rearrange = reverse . foldr' step []
     step x [] = [x]
     step x (y : ys) = case Map.lookup y subsequents of
       Just subs | Set.member x subs -> x : y : ys
