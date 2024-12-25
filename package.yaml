@@ -23,6 +23,7 @@ dependencies:
   - containers
   - hspec
   - regex-tdfa
+  - time
 
 ghc-options:
   - -Wall

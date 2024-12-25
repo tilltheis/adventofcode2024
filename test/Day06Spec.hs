@@ -25,4 +25,4 @@ spec = do
 
   describe "part2" $ do
     it "solves the official example" $ do
-      part2 input `shouldBe` 0
+      part2 input `shouldBe` 6
