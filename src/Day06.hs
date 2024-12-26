@@ -34,9 +34,14 @@ parseInput string =
           '^' -> (obs', Just (i `mod` stringWidth, i `div` stringWidth))
           _ -> (obs', st)
 
-findPath :: Set ((Int, Int), (Int, Int)) -> Input -> Maybe [((Int, Int), (Int, Int))]
+findPath ::
+  Set ((Int, Int), (Int, Int)) ->
+  Set ((Int, Int), (Int, Int)) ->
+  Input ->
+  Maybe [((Int, Int), (Int, Int))]
 findPath
   visited
+  knownPath
   Input
     { dimensions = (width, height),
       obstructions = obs,
@@ -53,6 +58,7 @@ findPath
       simulate pos@(x, y) dir@(dx, dy) vis
         | isOutOfBounds pos = Just []
         | (pos, dir) `Set.member` vis = Nothing
+        | (pos, dir) `Set.member` knownPath = Just [] -- skip path reconstruction because it's not needed
         | otherwise =
             let pos' = (x + dx, y + dy)
                 vis' = Set.insert (pos, dir) vis
@@ -61,26 +67,36 @@ findPath
                   else ((pos, dir) :) <$> simulate pos' dir vis'
 
 part1 :: Input -> Int
-part1 = Set.size . Set.fromList . map fst . fromJust . findPath Set.empty
+part1 = Set.size . Set.fromList . map fst . fromJust . findPath Set.empty Set.empty
 
 part2 :: Input -> Int
-part2 input = count isNothing . go Set.empty Set.empty . fromJust $ findPath Set.empty input
+part2 input = count isNothing . go Set.empty Set.empty . fromJust $ findPath Set.empty Set.empty input
   where
-    go visitedPath visitedPositions (pathEntry@(pos, dir) : pathEntry'@(pos', _) : pathEntries)
+    go visitedPath visitedPositions knownPath = go' visitedPath visitedPositions (Set.fromList $ tail knownPath) knownPath
+    go' visitedPath visitedPositions knownPath (pathEntry@(pos, dir) : pathEntry'@(pos', _) : pathEntries)
       | pos' `Set.member` visitedPositions
           || pos' == position input =
-          go visitedPath visitedPositions (pathEntry' : pathEntries)
+          go' visitedPath visitedPositions (Set.delete pathEntry' knownPath) (pathEntry' : pathEntries)
       | otherwise =
           findPath
             visitedPath
+            shortcuttableKnownPath
             ( input
                 { obstructions = Set.insert pos' (obstructions input),
                   position = pos,
                   direction = dir
                 }
             )
-            : go
+            : go'
               (Set.insert pathEntry visitedPath)
               (Set.insert pos' visitedPositions)
+              (Set.delete pathEntry' knownPath)
               (pathEntry' : pathEntries)
-    go _ _ _ = []
+      where
+        knownPath' = Set.delete pathEntry' knownPath
+        illegalSteps = [(pos', (0, -1)), (pos', (1, 0)), (pos', (0, 1)), (pos', (-1, 0))]
+        shortcuttableKnownPath =
+          if any (`Set.member` knownPath') illegalSteps
+            then Set.empty
+            else Set.delete pathEntry' knownPath'
+    go' _ _ _ _ = []
