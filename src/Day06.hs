@@ -4,6 +4,7 @@ import Data.Foldable (foldr')
 import Data.Maybe (fromJust, isNothing)
 import Data.Set (Set)
 import qualified Data.Set as Set
+import Util (count)
 
 data Input = Input
   { dimensions :: (Int, Int),
@@ -61,9 +62,6 @@ findPath
 
 part1 :: Input -> Int
 part1 = Set.size . Set.fromList . map fst . fromJust . findPath Set.empty
-
-count :: (a -> Bool) -> [a] -> Int
-count p = length . filter p
 
 part2 :: Input -> Int
 part2 input = count isNothing . go Set.empty Set.empty . fromJust $ findPath Set.empty input

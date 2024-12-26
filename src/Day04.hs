@@ -1,12 +1,11 @@
 module Day04 (Input, parseInput, part1, part2) where
 
+import Util (count)
+
 type Input = [[Char]]
 
 parseInput :: String -> Input
 parseInput = lines
-
-count :: (a -> Bool) -> [a] -> Int
-count p = length . filter p
 
 countPatternMatches :: Input -> Input -> Int
 countPatternMatches pattern input = count (== pattern) $ map mask subGrids
