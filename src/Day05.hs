@@ -5,29 +5,15 @@ import Data.Map (Map)
 import qualified Data.Map as Map
 import Data.Set (Set)
 import qualified Data.Set as Set
+import Util (both, splitOn, splitOn2)
 
 data Input = Input (Map Int (Set Int)) [[Int]] deriving (Eq, Show)
-
-mapSnd :: (b -> c) -> (a, b) -> (a, c)
-mapSnd f (a, b) = (a, f b)
-
-mapPair :: (a -> b) -> (a, a) -> (b, b)
-mapPair f (a, b) = (f a, f b)
-
-splitOn :: (Eq a) => a -> [a] -> [[a]]
-splitOn _ [] = []
-splitOn x ys = l : splitOn x (drop 1 r)
-  where
-    (l, r) = break (== x) $ dropWhile (== x) ys
-
-splitOnPair :: (Eq a) => a -> [a] -> ([a], [a])
-splitOnPair x = mapSnd (drop 1) . break (== x)
 
 parseInput :: String -> Input
 parseInput string = Input subsequents updates
   where
-    (subsequentsStrings, updatesStrings) = splitOnPair "" $ lines string
-    subsequentsPairs = map (mapPair read . splitOnPair '|') subsequentsStrings
+    (subsequentsStrings, updatesStrings) = splitOn2 "" $ lines string
+    subsequentsPairs = map (both read . splitOn2 '|') subsequentsStrings
     step (precedent, subsequent) = Map.insertWith Set.union precedent (Set.singleton subsequent)
     subsequents = foldr step Map.empty subsequentsPairs
     updates = map (map read . splitOn ',') updatesStrings
