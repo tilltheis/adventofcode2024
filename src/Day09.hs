@@ -1,7 +1,9 @@
 module Day09 (Input, parseInput, part1, part2) where
 
+import Data.Bifunctor (Bifunctor (first))
 import Data.Char (isSpace)
 import Data.List (dropWhileEnd)
+import qualified Data.Map as Map
 
 type Input = [Int]
 
@@ -23,33 +25,57 @@ part1 input = sum . zipWith (*) [0 ..] $ go 0 expandedLBlocks (length expandedRB
     go i (Nothing : lblocks) j (Nothing : rblocks) = go i (Nothing : lblocks) (j - 1) rblocks
     go _ _ _ _ = undefined
 
-replace1 :: (Eq a) => a -> a -> [a] -> [a]
-replace1 _ _ [] = []
-replace1 from to (x : xs) | x == from = to : xs
-replace1 from to (x : xs) = x : replace1 from to xs
+modifyAt :: Int -> (a -> a) -> [a] -> [a]
+modifyAt _ _ [] = []
+modifyAt 0 f (x : xs) = f x : xs
+modifyAt i f (x : xs) = x : modifyAt (i - 1) f xs
+
+type SpaceState = [[Int]] -- len -> [start]
+
+mkSpaceState :: [(Maybe Int, Int, Int)] -> SpaceState
+mkSpaceState = foldr step $ replicate 10 []
+  where
+    step (Just _, _, _) spaceState = spaceState
+    step (Nothing, start, len) spaceState = modifyAt len (start :) spaceState
+
+insertIntoMatchingSpace :: Int -> SpaceState -> Maybe (Int, SpaceState)
+insertIntoMatchingSpace len spaceState = do
+  (idx, start) <- first (len +) <$> findSmallestStart (drop len spaceState)
+  return (start, updateSpace idx (start + len) spaceState)
+  where
+    findSmallestStart = snd . foldl step (0, Nothing)
+    step (j, Just (i, x)) (y : _) = (j + 1, if x < y then Just (i, x) else Just (j, y))
+    step (j, Nothing) (y : _) = (j + 1, Just (j, y))
+    step (j, acc) [] = (j + 1, acc)
+    updateSpace idx start = insertSpace (idx - len) start . deleteSpace idx
+    deleteSpace idx = modifyAt idx tail
+    insertSpace 0 _ = id
+    insertSpace idx start = modifyAt idx (insertSorted start)
+    insertSorted start [] = [start]
+    insertSorted start (x : xs) | start < x = start : x : xs
+    insertSorted start (x : xs) = x : insertSorted start xs
 
 part2 :: Input -> Int
-part2 input = sum . zipWith (*) [0 ..] . expand $ moveAll reformattedLBlocks reformattedRBlocks
+part2 input = sum . zipWith (*) [0 ..] . expand 0 . moveAll $ reformat 0 0 input
   where
-    reformattedLBlocks = reformat 0 input
-    reformattedRBlocks = reverse reformattedLBlocks
+    reformat _ _ [] = []
+    reformat start fileId [files] = [(Just fileId, start, files)]
+    reformat start fileId (files : frees : blocks) =
+      (Just fileId, start, files)
+        : [(Nothing, start + files, frees) | frees > 0]
+        ++ reformat (start + files + frees) (fileId + 1) blocks
 
-    reformat _ [] = []
-    reformat fileId [files] = [(Just fileId, files)]
-    reformat fileId (files : frees : blocks) =
-      (Just fileId, files) : (Nothing, frees) : reformat (fileId + 1) blocks
+    expand i _ | i >= sum input = []
+    expand i m = case Map.lookup i m of
+      Just (fileId, len) -> replicate len fileId ++ expand (i + len) m
+      Nothing -> 0 : expand (i + 1) m
 
-    expand [] = []
-    expand ((Nothing, size) : blocks) = replicate size 0 ++ expand blocks
-    expand ((Just ident, size) : blocks) = replicate size ident ++ expand blocks
-
-    moveAll lblocks [] = lblocks
-    moveAll lblocks ((Nothing, _) : rblocks) = moveAll lblocks rblocks
-    moveAll lblocks ((Just fileId, size) : rblocks) = moveAll (moveOne lblocks fileId size) rblocks
-
-    moveOne lblocks@((Just lid, _) : _) rid _ | lid == rid = lblocks
-    moveOne ((Nothing, lsize) : lblocks) rid rsize
-      | lsize >= rsize =
-          (Just rid, rsize) : (Nothing, lsize - rsize) : replace1 (Just rid, rsize) (Nothing, rsize) lblocks
-    moveOne (lblock : lblocks) rid rsize = lblock : moveOne lblocks rid rsize
-    moveOne _ _ _ = undefined
+    moveAll blocks = fst $ foldr step (Map.empty, mkSpaceState blocks) blocks
+      where
+        step (Just fileId, start, len) (acc, spaceState) =
+          case insertIntoMatchingSpace len spaceState of
+            Just (spaceStart, spaceState')
+              | spaceStart < start ->
+                  (Map.insert spaceStart (fileId, len) acc, spaceState')
+            _ -> (Map.insert start (fileId, len) acc, spaceState)
+        step (Nothing, _, _) acc = acc
