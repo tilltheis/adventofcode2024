@@ -5,7 +5,7 @@ In Haskell!
 ## Setup
 
 1. Install Haskell with Stack using [GHCup](https://www.haskell.org/ghcup/).
-2. Create an `inputs/` folder and add your puzzle input files there, named `input1.txt`, `input2.txt` and so forth.
+2. Create an `inputs/` folder and add your puzzle input files there, named `input01.txt`, `input02.txt` and so forth.
 
 ## Running
 
