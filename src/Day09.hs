@@ -4,11 +4,12 @@ import Data.Bifunctor (Bifunctor (first))
 import Data.Char (isSpace)
 import Data.List (dropWhileEnd)
 import qualified Data.Map as Map
+import Util (parseDigit)
 
 type Input = [Int]
 
 parseInput :: String -> Input
-parseInput = map (read . (: [])) . dropWhileEnd isSpace
+parseInput = map parseDigit . dropWhileEnd isSpace
 
 part1 :: Input -> Int
 part1 input = sum . zipWith (*) [0 ..] $ go 0 expandedLBlocks (length expandedRBlocks - 1) expandedRBlocks

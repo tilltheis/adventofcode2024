@@ -1,6 +1,7 @@
 module Util (module Util) where
 
 import Data.Bifunctor (Bifunctor (second))
+import Data.Char (ord)
 
 count :: (a -> Bool) -> [a] -> Int
 count p = length . filter p
@@ -16,3 +17,6 @@ splitOn x ys = l : splitOn x (drop 1 r)
 
 splitOn2 :: (Eq a) => a -> [a] -> ([a], [a])
 splitOn2 x = second (drop 1) . break (== x)
+
+parseDigit :: Char -> Int
+parseDigit = subtract (ord '0') . ord

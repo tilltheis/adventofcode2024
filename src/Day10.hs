@@ -1,13 +1,10 @@
 module Day10 (Input, parseInput, part1, part2) where
 
-import Data.Char (ord)
 import Data.Monoid (Sum (Sum, getSum))
 import qualified Data.Set as Set
+import Util (parseDigit)
 
 type Input = ([(Int, Int)], [[Int]])
-
-parseDigit :: Char -> Int
-parseDigit = subtract (ord '0') . ord
 
 parseInput :: String -> Input
 parseInput input = (starts, grid)

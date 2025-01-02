@@ -11,6 +11,7 @@ import qualified Day07
 import qualified Day08
 import qualified Day09
 import qualified Day10
+import qualified Day11
 import System.Environment (getArgs)
 import Text.Printf (printf)
 import Text.Read (readMaybe)
@@ -51,6 +52,8 @@ main = do
           (09, 2) -> readFile "inputs/input09.txt" >>= (printTimedResult Day09.part2 . Day09.parseInput)
           (10, 1) -> readFile "inputs/input10.txt" >>= (printTimedResult Day10.part1 . Day10.parseInput)
           (10, 2) -> readFile "inputs/input10.txt" >>= (printTimedResult Day10.part2 . Day10.parseInput)
+          (11, 1) -> readFile "inputs/input11.txt" >>= (printTimedResult Day11.part1 . Day11.parseInput)
+          (11, 2) -> readFile "inputs/input11.txt" >>= (printTimedResult Day11.part2 . Day11.parseInput)
           _ -> putStrLn "Unsupported day/part combination"
         _ -> putStrLn "day and part must be integers"
     _ -> putStrLn "Usage: stack run <day> <part>\nExample: stack run 1 2"
