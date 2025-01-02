@@ -24,6 +24,7 @@ dependencies:
   - hspec
   - regex-tdfa
   - time
+  - text
 
 ghc-options:
   - -Wall

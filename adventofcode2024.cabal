@@ -46,6 +46,7 @@ library
     , containers
     , hspec
     , regex-tdfa
+    , text
     , time
   default-language: Haskell2010
 
@@ -62,6 +63,7 @@ executable adventofcode2024-exe
     , containers
     , hspec
     , regex-tdfa
+    , text
     , time
   default-language: Haskell2010
 
@@ -90,5 +92,6 @@ test-suite adventofcode2024-test
     , containers
     , hspec
     , regex-tdfa
+    , text
     , time
   default-language: Haskell2010
